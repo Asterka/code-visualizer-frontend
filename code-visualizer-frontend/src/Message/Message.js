@@ -1,15 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Message = ({ msg }) => {
+const Message = ({ msg, showMessage, setShowMessage}) => {
   return (
-    <div className='alert alert-info alert-dismissible fade show' role='alert'>
+    <div className={`alert ${showMessage===true ? 'visible' : 'hidden'}`} role='alert'>
       {msg}
       <button
-        type='button'
-        className='close'
-        data-dismiss='alert'
-        aria-label='Close'
+        onClick={()=>setShowMessage(false)}
       >
         <span aria-hidden='true'>&times;</span>
       </button>
