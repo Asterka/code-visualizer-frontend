@@ -38,6 +38,7 @@ const FileUpload = () => {
       });
 
       const { fileName, filePath } = res.data;
+      console.log(res.data.data);
 
       setUploadedFile({ fileName, filePath });
 
