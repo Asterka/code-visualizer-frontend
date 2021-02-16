@@ -1,5 +1,6 @@
 @import "../Message/message";
 @import "../Progress/progress";
+@import "./base/reset";
 
 .hidden{
     visibility: hidden;
@@ -7,3 +8,4 @@
 .visible{
     visibility: visible;
 }
+canvas{position: absolute; width: 100vw; height: 80vh;}

@@ -3,7 +3,7 @@ import Message from './Message/Message';
 import Progress from './Progress/Progress';
 import axios from 'axios';
 
-const FileUpload = () => {
+const FileUpload = ({userToken}) => {
   const [file, setFile] = useState('');
   const [filename, setFilename] = useState('Choose File');
   const [uploadedFile, setUploadedFile] = useState({});
@@ -20,6 +20,7 @@ const FileUpload = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('token', userToken);
     try {
       const res = await axios.post('http://localhost:5000/upload', formData, {
         headers: {
