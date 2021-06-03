@@ -1,0 +1,16 @@
+.custom-file-upload {
+  width: 270px;
+  height: 80px;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  &:hover{
+      border: 2px solid rgb(121, 187, 47);
+      background-color: rgb(208, 241, 170);
+  }
+}
+input[type="file"] {
+    display: none;
+}

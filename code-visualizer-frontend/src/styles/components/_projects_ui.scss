@@ -1,0 +1,25 @@
+.current-projects {
+  font-family: MyFont;
+  color: aliceblue;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 38px;
+  display: flex;
+  align-items: center;
+}
+
+.clickable-project{
+  font-family: MyFont;
+  font-size: 23px;
+  color: aliceblue;
+  &-chosen{
+    color: blueviolet;
+  }
+}
+
+.controls{
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 2;
+}

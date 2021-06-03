@@ -1,18 +1,18 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { GUI } from "./GUI";
+import { GUI } from "../GUI";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function renderBase() {
   function main() {
-    const canvas = document.querySelector("#canvas");
+    const canvas = document.getElementById("canvas");
     const renderer = new THREE.WebGLRenderer({ canvas });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     const fov = 45;
-    const aspect = 2; // the canvas default
+    const aspect = window.innerWidth / window.innerHeight; // the canvas default
     const near = 0.1;
     const far = 100;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -47,21 +47,6 @@ function renderBase() {
       const mesh = new THREE.Mesh(planeGeo, planeMat);
       mesh.rotation.x = Math.PI * -0.5;
       scene.add(mesh);
-
-      /*const GLTFloader = new GLTFLoader();
-
-      GLTFloader.load(
-        "./models/sphere.glb",
-        function (gltf) {
-          console.log(gltf[0])
-          scene.add(gltf.scene);
-        },
-        undefined,
-        function (error) {
-          console.error(error);
-        }
-      );
-  */
     }
     {
       const cubeSize = 4;
@@ -122,6 +107,7 @@ function renderBase() {
       const height = canvas.clientHeight;
       const needResize = canvas.width !== width || canvas.height !== height;
       if (needResize) {
+        resizeReset();
         renderer.setSize(width, height, false);
       }
       return needResize;
@@ -140,24 +126,37 @@ function renderBase() {
     }
 
     requestAnimationFrame(render);
+
     var animate = function () {
       requestAnimationFrame(animate);
       scene.rotateY(0.001);
       renderer.render(scene, camera);
     };
+
     animate();
   }
   main();
 }
 
-function Canvas() {
-  const canvas = useRef(null);
+const Canvas = (props) => {
+  const canvasRef = useRef(null);
+
   useEffect(() => {
-    renderBase();
-  }, [canvas]);
+    renderBase(props.city);
+  }, [canvasRef]);
+
+  window.addEventListener("resize", function () {
+    //renderBase();
+  });
+
   return (
-    <canvas id={"canvas"} ref={canvas} width="100%" height="100%"></canvas>
+    <canvas
+      id={"canvas"}
+      ref={canvasRef}
+      width={"100vw"}
+      height={"100vh"}
+    ></canvas>
   );
-}
+};
 
 export default Canvas;

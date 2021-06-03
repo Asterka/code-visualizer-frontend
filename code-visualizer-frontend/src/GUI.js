@@ -11,6 +11,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
+/* eslint-disable no-alert, no-console */
+
 function ___$insertStyle(css) {
     if (!css) {
       return;
@@ -2521,4 +2523,4 @@ function ___$insertStyle(css) {
   export { color, controllers, dom$1 as dom, gui, GUI$1 as GUI };
   export default index;
   //# sourceMappingURL=dat.gui.module.js.map
-  
+  /* eslint-disable no-alert, no-console */

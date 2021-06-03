@@ -1,18 +1,14 @@
-@import "../Message/message";
-@import "../Progress/progress";
 @import "./base/reset";
+@import "./base/typography";
+@import "./components/canvas";
+@import "./components/projects_ui";
+@import "./components/buttons";
 
 .hidden{
     visibility: hidden;
 }
 .visible{
     visibility: visible;
-}
-canvas{position: absolute; width: 100%; height: 80%;}
-
-div.projects{
-    position: absolute;
-    color: aliceblue;
 }
 
 button{

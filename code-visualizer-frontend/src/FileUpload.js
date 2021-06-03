@@ -1,92 +1,83 @@
-import React, { Fragment, useState } from 'react';
-import Message from './Message/Message';
-import Progress from './Progress/Progress';
-import axios from 'axios';
+import React, { Fragment, useState } from "react";
+import Message from "./Message/Message";
+import axios from "axios";
 
-const FileUpload = ({userToken}) => {
-  const [file, setFile] = useState('');
-  const [filename, setFilename] = useState('Choose File');
+const FileUpload = ({ userToken }) => {
+  const [file, setFile] = useState("");
+  const [filename, setFilename] = useState(null);
   const [uploadedFile, setUploadedFile] = useState({});
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(true);
-  const [uploadPercentage, setUploadPercentage] = useState(0);
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFile(e.target.files[0]);
     setFilename(e.target.files[0].name);
   };
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('token', userToken);
+    formData.append("file", file);
+    formData.append("token", userToken);
     try {
-      const res = await axios.post('http://localhost:5000/upload', formData, {
+      const res = await axios.post("http://localhost:5000/upload", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
-        onUploadProgress: progressEvent => {
-          setUploadPercentage(
-            parseInt(
-              Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            )
-          );
-
-          // Clear percentage
-          setTimeout(() => setUploadPercentage(0), 10000);
-        }
       });
 
       const { fileName, filePath } = res.data;
-      console.log(res.data.data);
 
-      setUploadedFile({ fileName, filePath });
+      setFilename(null);
+      setMessage({opcode: 1, msg:`File ${fileName} has successfully been uploaded`});
+      setShowMessage(true);
 
-      setMessage('File Uploaded');
     } catch (err) {
       if (err.response.status === 500) {
-        setMessage('There was a problem with the server');
+        setMessage({opcode: 0, msg:`Critical error on the server: ${JSON.stringify(err.response.data.data)}`});
+        setShowMessage(true);
       } else {
-        setMessage(err.response.data.msg);
+        setMessage({opcode: 0, msg:err.response.data});
+        setShowMessage(true);
       }
     }
   };
 
   return (
-    <Fragment>
-      {message ? <Message msg={message} showMessage={showMessage} setShowMessage={setShowMessage}/> : null}
+    <div>
+      {message ? (
+        <Message
+          msg={message.msg}
+          showMessage={showMessage}
+          setShowMessage={setShowMessage}
+          ok={message.opcode}
+        />
+      ) : null}
       <form onSubmit={onSubmit}>
-        <div className='custom-file mb-4'>
+        <label className="custom-file-upload">
           <input
-            type='file'
+            type="file"
             accept="application/java-archive"
-            className='custom-file-input'
-            id='customFile'
+            id="customFile"
+            style={{
+              color: "white",
+              fontFamily: "Roboto",
+              fontSize: "20px",
+            }}
             onChange={onChange}
           />
-          <label className='custom-file-label' htmlFor='customFile'>
-            {filename}
-          </label>
-        </div>
-
-        <Progress percentage={uploadPercentage} />
+          {"Choose project file to upload"}
+        </label>
+        <h1 style={{color:'white'}}>{filename ? "File " + filename + " has been chosen" : ''}</h1>
 
         <input
-          type='submit'
-          value='Upload'
-          className='btn btn-primary btn-block mt-4'
+          type="submit"
+          value="Upload file"
+          style={{backgroundColor:"white", color:"black"}}
+          className={`${filename ? "visible" : "hidden"}`}
         />
       </form>
-      {uploadedFile ? (
-        <div className='row mt-5'>
-          <div className='col-md-6 m-auto'>
-            <h3 className='text-center'>{uploadedFile.fileName}</h3>
-            <img style={{ width: '100%' }} src={uploadedFile.filePath} alt='' />
-          </div>
-        </div>
-      ) : null}
-    </Fragment>
+    </div>
   );
 };
 
