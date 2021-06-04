@@ -6,10 +6,16 @@ import ClickableProject from "./ClickableProject";
 function getProjects(
   token,
   setMyProjects,
-  isDropdownActive,
   setIsDropdownActive,
   currentProject,
-  setCurrentProject
+  setCurrentProject,
+  setProjectData,
+  setShowMessage,
+  showMessage,
+  setMessage,
+  message,
+  metricPicked,
+  setMetricPicked
 ) {
   axios
     .get("http://localhost:5000/projects", {
@@ -26,6 +32,14 @@ function getProjects(
               setIsDropdownActive={setIsDropdownActive}
               setCurrentProject={setCurrentProject}
               currentProject={currentProject}
+              user_token={token}
+              setProjectData={setProjectData}
+              setShowMessage={setShowMessage}
+              showMessage={showMessage}
+              setMessage={setMessage}
+              message={message}
+              metricPicked={metricPicked}
+              setMetricPicked={setMetricPicked}
             />
           );
         })
@@ -44,6 +58,13 @@ function Projects({
   setMyProjects,
   currentProject,
   setCurrentProject,
+  setProjectData,
+  setShowMessage,
+  showMessage,
+  setMessage,
+  message,
+  metricPicked,
+  setMetricPicked,
 }) {
   return (
     <div className="projects">
@@ -54,14 +75,20 @@ function Projects({
           getProjects(
             userToken,
             setMyProjects,
-            isDropdownActive,
             setIsDropdownActive,
             currentProject,
-            setCurrentProject
+            setCurrentProject,
+            setProjectData,
+            setShowMessage,
+            showMessage,
+            setMessage,
+            message,
+            metricPicked,
+            setMetricPicked
           );
         }}
       >
-        {currentProject!=null?currentProject:"Choose project to inspect"}
+        {currentProject != null ? currentProject : "Choose project to inspect"}
         <Chevron
           isActive={!isDropdownActive}
           color={"white"}

@@ -8,18 +8,40 @@
   align-items: center;
 }
 
-.clickable-project{
+.clickable-project {
   font-family: MyFont;
   font-size: 23px;
   color: aliceblue;
-  &-chosen{
+  &-chosen {
     color: blueviolet;
   }
 }
 
-.controls{
+.controls {
   display: flex;
   flex-direction: column;
   position: absolute;
   z-index: 2;
+  width: 100vw;
+  height: 100vh;
+}
+
+.metric-picker {
+  position: absolute;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  z-index: 2;
+  bottom: 0;
+  right: 0;
+  max-width: 50%;
+  font-family: MyFont;
+  color: aliceblue;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 38px;
+
+  button{
+    
+  }
 }
