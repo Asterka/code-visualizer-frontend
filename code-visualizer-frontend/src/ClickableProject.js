@@ -1,4 +1,5 @@
 import React from "react";
+import { codeVisualizerServer } from "./config";
 import axios from "axios";
 
 export default function ClickableProject(props) {
@@ -13,7 +14,7 @@ export default function ClickableProject(props) {
         props.setCurrentProject(props.id);
         axios
           .get(
-            `http://localhost:5000/metrics/${props.user_token}/${props.id}/${props.metricPicked.metricShortNames[props.metricPicked.chosen]}`,
+            `${codeVisualizerServer.address}/metrics/${props.user_token}/${props.id}/${props.metricPicked.metricShortNames[props.metricPicked.chosen]}`,
             {}
           )
           .then(function (res) {

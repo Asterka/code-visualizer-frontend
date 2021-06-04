@@ -1,0 +1,14 @@
+.alert {
+  position: absolute;
+  right: 0;
+  max-width: 50%;
+  max-height: 20%;
+  min-height: clamp(10%, 100px, 20%);
+  min-width: clamp(20%, 400px, 45%);
+  overflow-y: scroll;
+  button{
+      position: absolute;
+      bottom:0;
+      right:0;
+  }
+}

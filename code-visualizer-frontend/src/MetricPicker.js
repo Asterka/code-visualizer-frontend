@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Chevron } from "./Chevron";
+import { codeVisualizerServer } from "./config";
 
 export default function MetricPicker({
   isDropdownActive,
@@ -26,7 +27,7 @@ export default function MetricPicker({
             setMetricPicked(Object.assign({}, temp));
             axios
               .get(
-                `http://localhost:5000/metrics/${user_token}/${project_id}/${
+                `${codeVisualizerServer.address}/metrics/${user_token}/${project_id}/${
                   metricPicked.metricShortNames[metricPicked.chosen]
                 }`,
                 {}
@@ -67,7 +68,7 @@ export default function MetricPicker({
             setMetricPicked(Object.assign({}, temp));
             axios
               .get(
-                `http://localhost:5000/metrics/${user_token}/${project_id}/${
+                `${codeVisualizerServer.address}/metrics/${user_token}/${project_id}/${
                   metricPicked.metricShortNames[metricPicked.chosen]
                 }`,
                 {}

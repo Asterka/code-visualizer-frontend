@@ -6,8 +6,6 @@ import { GUI } from "../GUI";
 import { useEffect, useRef, useState } from "react";
 
 function renderBase(data, metric) {
-  console.log(metric);
-  let parsedData = {};
   function main() {
     const canvas = document.getElementById("canvas");
     const renderer = new THREE.WebGLRenderer({ canvas });
@@ -25,7 +23,7 @@ function renderBase(data, metric) {
     controls.update();
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("black");
+    scene.background = new THREE.Color('#060A27');
 
     {
       const planeSize = 40;

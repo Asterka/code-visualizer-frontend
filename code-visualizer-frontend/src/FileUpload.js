@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from "react";
 import Message from "./Message/Message";
 import axios from "axios";
+import { codeVisualizerServer } from "./config";
 
 const FileUpload = ({
   userToken,
@@ -23,7 +24,7 @@ const FileUpload = ({
     formData.append("file", file);
     formData.append("token", userToken);
     try {
-      const res = await axios.post("http://localhost:5000/upload", formData, {
+      const res = await axios.post(`${codeVisualizerServer.address}/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -85,7 +86,11 @@ const FileUpload = ({
         <input
           type="submit"
           value="Upload file"
-          style={{ backgroundColor: "white", color: "black" }}
+          style={{
+            backgroundColor: "white",
+            color: "black",
+            pointerEvents: "all",
+          }}
           className={`${filename ? "visible" : "hidden"}`}
         />
       </form>

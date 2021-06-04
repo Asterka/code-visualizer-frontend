@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Chevron } from "./Chevron";
 import ClickableProject from "./ClickableProject";
+import { codeVisualizerServer } from "./config";
 
 function getProjects(
   token,
@@ -18,7 +19,7 @@ function getProjects(
   setMetricPicked
 ) {
   axios
-    .get("http://localhost:5000/projects", {
+    .get(`${codeVisualizerServer.address}/projects`, {
       params: {
         token: token,
       },
@@ -46,7 +47,8 @@ function getProjects(
       );
     })
     .catch(function (e) {
-      console.log(e);
+      setMessage({opcode:0, msg: "Could not get to the server. Make sure the server is running, and check config.js"});
+      setShowMessage(true);
     });
 }
 
