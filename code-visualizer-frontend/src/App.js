@@ -62,7 +62,7 @@ function App() {
             setMessage={setMessage}
           />
         </div>
-        <Canvas />
+        <Canvas projectData={projectData}/>
       </div>
     </body>
   );

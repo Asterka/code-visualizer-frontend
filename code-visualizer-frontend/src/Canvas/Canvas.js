@@ -5,7 +5,9 @@ import { GUI } from "../GUI";
 
 import { useEffect, useRef, useState } from "react";
 
-function renderBase() {
+function renderBase(data, metric) {
+  console.log(metric);
+  let parsedData = {};
   function main() {
     const canvas = document.getElementById("canvas");
     const renderer = new THREE.WebGLRenderer({ canvas });
@@ -142,8 +144,13 @@ const Canvas = (props) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    renderBase(props.city);
-  }, [canvasRef]);
+    if (props.projectData !== null) {
+      let metric = props.projectData.config.url.split("/");
+      renderBase(props.projectData, metric[metric.length - 1]);
+    }else{
+      renderBase([], null);
+    }
+  }, [props.projectData]);
 
   window.addEventListener("resize", function () {
     //renderBase();
