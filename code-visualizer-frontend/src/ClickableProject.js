@@ -4,10 +4,10 @@ import axios from "axios";
 
 export default function ClickableProject(props) {
   return (
-    <h1
+    <h1 key={props.id}
       className={`clickable-project${
         props.id === props.currentProject ? "-chosen" : ""
-      }`}
+      } xyz-in`}
       /* When choosing the project from the list, up */
       onClick={() => {
         props.setIsDropdownActive(false);
@@ -19,6 +19,8 @@ export default function ClickableProject(props) {
           )
           .then(function (res) {
             props.setProjectData(res);
+            let date = new Date(res.data.timestamp);
+            props.setMessage({opcode: 1, msg:`You have successfully loaded data from ${date.getDate()}.${date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`})
           })
           .catch(function (e) {
             switch (e.response.status) {

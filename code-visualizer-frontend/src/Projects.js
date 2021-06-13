@@ -98,7 +98,7 @@ function Projects({
           height={"16px"}
         />
       </h1>
-      {isDropdownActive ? MyProjects : <></>}
+      {isDropdownActive ? <div xyz="fade duration-4 ease-in-out stagger">{MyProjects}</div> : <></>}
     </div>
   );
 }

@@ -4,9 +4,11 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { GUI } from "../GUI";
 
 import { useEffect, useRef, useState } from "react";
+let rendering = false;
 
 function renderBase(data, metric) {
   function main() {
+    console.log(data)
     const canvas = document.getElementById("canvas");
     const renderer = new THREE.WebGLRenderer({ canvas });
 
@@ -23,11 +25,10 @@ function renderBase(data, metric) {
     controls.update();
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#060A27');
+    scene.background = new THREE.Color("#060A27");
 
     {
       const planeSize = 40;
-
       const loader = new THREE.TextureLoader();
       const texture = loader.load(
         "https://im0-tub-ru.yandex.net/i?id=56d24402bb1ed0a0e3df9628efebb217-l&n=13"
@@ -107,7 +108,6 @@ function renderBase(data, metric) {
       const height = canvas.clientHeight;
       const needResize = canvas.width !== width || canvas.height !== height;
       if (needResize) {
-        resizeReset();
         renderer.setSize(width, height, false);
       }
       return needResize;
@@ -126,14 +126,19 @@ function renderBase(data, metric) {
     }
 
     requestAnimationFrame(render);
-
+    cancelAnimationFrame(render);
+    
     var animate = function () {
       requestAnimationFrame(animate);
       scene.rotateY(0.001);
+      renderer.setAnimationLoop(null);
       renderer.render(scene, camera);
     };
 
-    animate();
+    if (!rendering) {
+      animate();
+      rendering = true;
+    }
   }
   main();
 }
@@ -144,15 +149,11 @@ const Canvas = (props) => {
   useEffect(() => {
     if (props.projectData !== null) {
       let metric = props.projectData.config.url.split("/");
-      renderBase(props.projectData, metric[metric.length - 1]);
-    }else{
+      renderBase(props.projectData.data, metric[metric.length - 1]);
+    } else {
       renderBase([], null);
     }
   }, [props.projectData]);
-
-  window.addEventListener("resize", function () {
-    //renderBase();
-  });
 
   return (
     <canvas
