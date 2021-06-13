@@ -21,6 +21,7 @@ export default function ClickableProject(props) {
             props.setProjectData(res);
             let date = new Date(res.data.timestamp);
             props.setMessage({opcode: 1, msg:`You have successfully loaded data from ${date.getDate()}.${date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`})
+            props.setShowMessage(true);
           })
           .catch(function (e) {
             switch (e.response.status) {

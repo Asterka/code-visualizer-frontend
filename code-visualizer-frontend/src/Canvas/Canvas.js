@@ -3,12 +3,12 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { GUI } from "../GUI";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { LOC } from "../helpers/displayMetrics";
 let rendering = false;
 
-function renderBase(data, metric) {
+function renderBase(data, metric, levelState) {
   function main() {
-    console.log(data)
     const canvas = document.getElementById("canvas");
     const renderer = new THREE.WebGLRenderer({ canvas });
 
@@ -16,9 +16,9 @@ function renderBase(data, metric) {
     const fov = 45;
     const aspect = window.innerWidth / window.innerHeight; // the canvas default
     const near = 0.1;
-    const far = 100;
+    const far = 300;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 10, 20);
+    camera.position.set(0, 100, 100);
 
     const controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 5, 0);
@@ -26,9 +26,8 @@ function renderBase(data, metric) {
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#060A27");
-
+    const planeSize = 40;
     {
-      const planeSize = 40;
       const loader = new THREE.TextureLoader();
       const texture = loader.load(
         "https://im0-tub-ru.yandex.net/i?id=56d24402bb1ed0a0e3df9628efebb217-l&n=13"
@@ -39,7 +38,7 @@ function renderBase(data, metric) {
       const repeats = planeSize / 2;
       texture.repeat.set(repeats, repeats);
 
-      const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
+      const planeGeo = new THREE.PlaneGeometry(planeSize*2, planeSize*2);
       const planeMat = new THREE.MeshPhongMaterial({
         map: texture,
         side: THREE.DoubleSide,
@@ -50,26 +49,10 @@ function renderBase(data, metric) {
       scene.add(mesh);
     }
     {
-      const cubeSize = 4;
-      const cubeGeo = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-      const cubeMat = new THREE.MeshPhongMaterial({ color: "#8AC" });
-      const mesh = new THREE.Mesh(cubeGeo, cubeMat);
-      mesh.position.set(cubeSize + 1, cubeSize / 2, 0);
-      scene.add(mesh);
-    }
-    {
-      const sphereRadius = 3;
-      const sphereWidthDivisions = 32;
-      const sphereHeightDivisions = 16;
-      const sphereGeo = new THREE.SphereGeometry(
-        sphereRadius,
-        sphereWidthDivisions,
-        sphereHeightDivisions
-      );
-      const sphereMat = new THREE.MeshPhongMaterial({ color: "#CA8" });
-      const mesh = new THREE.Mesh(sphereGeo, sphereMat);
-      mesh.position.set(-sphereRadius - 1, sphereRadius + 2, 0);
-      scene.add(mesh);
+      switch(metric){
+        case 'LOC':
+          LOC(THREE, data, scene, levelState, planeSize)
+      }
     }
 
     class ColorGUIHelper {
@@ -127,17 +110,16 @@ function renderBase(data, metric) {
 
     requestAnimationFrame(render);
     cancelAnimationFrame(render);
-    
+
     var animate = function () {
       requestAnimationFrame(animate);
       scene.rotateY(0.001);
       renderer.setAnimationLoop(null);
       renderer.render(scene, camera);
     };
-
     if (!rendering) {
       animate();
-      rendering = true;
+      rendering=true;
     }
   }
   main();
@@ -149,11 +131,15 @@ const Canvas = (props) => {
   useEffect(() => {
     if (props.projectData !== null) {
       let metric = props.projectData.config.url.split("/");
-      renderBase(props.projectData.data, metric[metric.length - 1]);
+      renderBase(
+        props.projectData.data,
+        metric[metric.length - 1],
+        props.levelState
+      );
     } else {
       renderBase([], null);
     }
-  }, [props.projectData]);
+  }, [props.projectData, props.levelState]);
 
   return (
     <canvas

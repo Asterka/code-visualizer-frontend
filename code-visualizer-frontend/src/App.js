@@ -5,6 +5,8 @@ import Projects from "./Projects";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import MetricPicker from "./MetricPicker";
+import RangeInput from "./RangeInput/RangeInput";
+
 
 function App() {
   const [userToken, setUserToken] = useState(
@@ -18,10 +20,11 @@ function App() {
   const [projectData, setProjectData] = useState(null);
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(true);
+  const [levelState, setLevelState] = useState(0);
   /* User-chosen metric */
   const [metricPicked, setMetricPicked] = useState({
     chosen: 0,
-    metricShortNames: ["LOC", "CBO"],
+    metricShortNames: ["LOC", "CBO", "CYCOMP"],
   });
 
   return (
@@ -61,8 +64,10 @@ function App() {
             setShowMessage={setShowMessage}
             setMessage={setMessage}
           />
+          
+          <RangeInput levelState={levelState} setLevelState={setLevelState}/>
         </div>
-        <Canvas projectData={projectData}/>
+        <Canvas projectData={projectData} levelState={levelState}/>
       </div>
     </body>
   );
