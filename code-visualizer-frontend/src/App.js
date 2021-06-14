@@ -6,7 +6,7 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import MetricPicker from "./MetricPicker";
 import RangeInput from "./RangeInput/RangeInput";
-
+import { render } from "@testing-library/react";
 
 function App() {
   const [userToken, setUserToken] = useState(
@@ -21,6 +21,9 @@ function App() {
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(true);
   const [levelState, setLevelState] = useState(0);
+  const [inspectedClass, setInspectedClass] = useState([]);
+  const [isListening, setIsListening] = useState(false);
+  const [scene, setScene] = useState(null)
   /* User-chosen metric */
   const [metricPicked, setMetricPicked] = useState({
     chosen: 0,
@@ -64,10 +67,22 @@ function App() {
             setShowMessage={setShowMessage}
             setMessage={setMessage}
           />
-          
-          <RangeInput levelState={levelState} setLevelState={setLevelState}/>
+
+          <RangeInput levelState={levelState} setLevelState={setLevelState} />
         </div>
-        <Canvas projectData={projectData} levelState={levelState}/>
+        <Canvas
+          projectData={projectData}
+          levelState={levelState}
+          inspectedClass={inspectedClass}
+          setInspectedClass={setInspectedClass}
+          isListening={isListening}
+          setIsListening={setIsListening}
+          scene={scene}
+          setScene={setScene}
+          setMessage={setMessage}
+          setShowMessage={setShowMessage}
+        />
+
       </div>
     </body>
   );

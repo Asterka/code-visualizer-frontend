@@ -6,17 +6,83 @@ import { GUI } from "../GUI";
 import { useEffect, useRef } from "react";
 import { LOC } from "../helpers/displayMetrics";
 let rendering = false;
+let listenerExists = false;
 
-function renderBase(data, metric, levelState) {
+function renderBase(
+  data,
+  metric,
+  levelState,
+  inspectedClass,
+  setInspectedClass=()=>{},
+  isListening,
+  setIsListening,
+  setMessage=()=>{},
+  setShowMessage=()=>{}
+) {
   function main() {
     const canvas = document.getElementById("canvas");
     const renderer = new THREE.WebGLRenderer({ canvas });
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color("#060A27");
     const fov = 45;
     const aspect = window.innerWidth / window.innerHeight; // the canvas default
     const near = 0.1;
     const far = 300;
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    var selectedObject;
+    var raycaster = new THREE.Raycaster();
+    function listenClick(event, setIsListening, renderer) {
+      setIsListening(false);
+      var mouse = new THREE.Vector2();
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      var intersects = raycaster.intersectObjects(scene.children); //array
+      if (intersects.length > 0) {
+        selectedObject = intersects[0];
+        /* if the object is not the plane underneath */
+        if (selectedObject.object.geometry.type != "PlaneGeometry") {
+          if (
+            Object.keys(inspectedClass) < 0 ||
+            inspectedClass.className != selectedObject.object.metrics.filename
+          ) {
+            console.log({
+              metrics: selectedObject.object.metrics,
+              className: selectedObject.object.metrics.filename,
+            });
+            setInspectedClass({
+              metrics: selectedObject.object.metrics,
+              className: selectedObject.object.metrics.filename,
+            });
+            setMessage({opcode: 1, msg:`${selectedObject.object.metrics.filename}`})
+            setShowMessage(true);
+          }
+        } else {
+          setInspectedClass({
+            metrics: null,
+            className: "None",
+          });
+          setMessage({opcode: 1, msg:`No class selected`})
+          setShowMessage(true);
+        }
+      }else{
+        renderer.domElement.addEventListener(
+          "click",
+          (event) => listenClick(event, setIsListening, renderer),
+          { once: true }
+        );
+      }
+    }
+
+    if (!isListening) {
+      renderer.domElement.addEventListener(
+        "click",
+        (event) => listenClick(event, setIsListening, renderer),
+        { once: true }
+      );
+    }
+
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.set(0, 100, 100);
 
@@ -24,8 +90,6 @@ function renderBase(data, metric, levelState) {
     controls.target.set(0, 5, 0);
     controls.update();
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#060A27");
     const planeSize = 40;
     {
       const loader = new THREE.TextureLoader();
@@ -38,7 +102,7 @@ function renderBase(data, metric, levelState) {
       const repeats = planeSize / 2;
       texture.repeat.set(repeats, repeats);
 
-      const planeGeo = new THREE.PlaneGeometry(planeSize*2, planeSize*2);
+      const planeGeo = new THREE.PlaneGeometry(planeSize * 2, planeSize * 2);
       const planeMat = new THREE.MeshPhongMaterial({
         map: texture,
         side: THREE.DoubleSide,
@@ -49,9 +113,9 @@ function renderBase(data, metric, levelState) {
       scene.add(mesh);
     }
     {
-      switch(metric){
-        case 'LOC':
-          LOC(THREE, data, scene, levelState, planeSize)
+      switch (metric) {
+        case "LOC":
+          LOC(THREE, data, scene, levelState, planeSize, inspectedClass);
       }
     }
 
@@ -119,7 +183,7 @@ function renderBase(data, metric, levelState) {
     };
     if (!rendering) {
       animate();
-      rendering=true;
+      rendering = true;
     }
   }
   main();
@@ -131,15 +195,31 @@ const Canvas = (props) => {
   useEffect(() => {
     if (props.projectData !== null) {
       let metric = props.projectData.config.url.split("/");
-      renderBase(
-        props.projectData.data,
-        metric[metric.length - 1],
-        props.levelState
-      );
+      {
+        renderBase(
+          props.projectData.data,
+          metric[metric.length - 1],
+          props.levelState,
+          props.inspectedClass,
+          props.setInspectedClass,
+          props.isListening,
+          props.setIsListening,
+          props.setMessage,
+          props.setShowMesseage
+        );
+      }
     } else {
-      renderBase([], null);
+      renderBase(
+        [],
+        [],
+        undefined,
+        undefined,
+        undefined,
+        props.isListening,
+        props.setIsListening
+      );
     }
-  }, [props.projectData, props.levelState]);
+  }, [props.projectData, props.levelState, props.inspectedClass]);
 
   return (
     <canvas

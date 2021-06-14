@@ -18,21 +18,35 @@ export default function MetricPicker({
       <button
         onClick={() => {
           if (user_token != null && project_id != null) {
-              console.log(project_id)
+            console.log(project_id);
             let temp = metricPicked;
             temp.chosen != 0
               ? (temp.chosen -= 1)
               : (temp.chosen = temp.metricShortNames.length - 1);
             //console.log(temp)
             setMetricPicked(Object.assign({}, temp));
+            setMessage({
+              opcode: 1,
+              msg: "Your files are being retrieved from the server",
+            });
+            setShowMessage(true);
             axios
               .get(
-                `${codeVisualizerServer.address}/metrics/${user_token}/${project_id}/${
+                `${
+                  codeVisualizerServer.address
+                }/metrics/${user_token}/${project_id}/${
                   metricPicked.metricShortNames[metricPicked.chosen]
                 }`,
                 {}
               )
               .then(function (res) {
+                let date = new Date(res.data.timestamp);
+                setMessage({
+                  opcode: 1,
+                  msg: `You have successfully loaded data from ${date.getDate()}.${date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}
+                Metric: ${metricPicked.metricShortNames[metricPicked.chosen]}`,
+                });
+                setShowMessage(true);
                 setProjectData(res);
               })
               .catch(function (e) {
@@ -68,7 +82,9 @@ export default function MetricPicker({
             setMetricPicked(Object.assign({}, temp));
             axios
               .get(
-                `${codeVisualizerServer.address}/metrics/${user_token}/${project_id}/${
+                `${
+                  codeVisualizerServer.address
+                }/metrics/${user_token}/${project_id}/${
                   metricPicked.metricShortNames[metricPicked.chosen]
                 }`,
                 {}
