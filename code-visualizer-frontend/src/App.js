@@ -23,7 +23,7 @@ function App() {
   const [levelState, setLevelState] = useState(0);
   const [inspectedClass, setInspectedClass] = useState([]);
   const [isListening, setIsListening] = useState(false);
-  const [scene, setScene] = useState(null)
+  const [canvasGeneral, setCanvasGeneral] = useState(null)
   /* User-chosen metric */
   const [metricPicked, setMetricPicked] = useState({
     chosen: 0,
@@ -77,10 +77,10 @@ function App() {
           setInspectedClass={setInspectedClass}
           isListening={isListening}
           setIsListening={setIsListening}
-          scene={scene}
-          setScene={setScene}
           setMessage={setMessage}
           setShowMessage={setShowMessage}
+          canvasGeneral={canvasGeneral}
+          setCanvasGeneral={setCanvasGeneral}
         />
 
       </div>

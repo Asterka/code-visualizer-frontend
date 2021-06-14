@@ -10,6 +10,10 @@ exports.LOC = (THREE, data, scene, levelState, planeSize, inspectedClass) => {
   let maxViolations = 0;
   let minViolations = 0;
   let dataObjects = [];
+  while (scene.children.length > 0) {
+    scene.remove(scene.children[0]);
+  }
+
   /* If there are no files, no need to bother ourleves with looking */
   if (data.files ?? [].length > 0) {
     /* map all the files from the input, which represents an Array of classes, files is an Array of Objects each representing a number
@@ -44,7 +48,7 @@ exports.LOC = (THREE, data, scene, levelState, planeSize, inspectedClass) => {
       let color = Math.floor(
         (data[i].violations.length / maxViolations) * 255
       ).toString(16);
-      color = color.length==1?'0'+color:color;
+      color = color.length == 1 ? "0" + color : color;
 
       var building = new THREE.Mesh(
         new THREE.BoxGeometry(
@@ -52,17 +56,20 @@ exports.LOC = (THREE, data, scene, levelState, planeSize, inspectedClass) => {
           (10 * data[i].violations.length) / maxViolations,
           cubeSide
         ),
-        !inspectedClass.className || inspectedClass.className != data[i].filename ? new THREE.MeshLambertMaterial({
-          color: `#${color}00AA`,
-        }): new THREE.MeshLambertMaterial({
-            color: `#FFBF00`,
-          })
+        !inspectedClass.className ||
+        inspectedClass.className != data[i].filename
+          ? new THREE.MeshLambertMaterial({
+              color: `#${color}00AA`,
+            })
+          : new THREE.MeshLambertMaterial({
+              color: `#FFBF00`,
+            })
       );
       building.position.x = meshX;
       building.position.y =
         1 + (10 * data[i].violations.length) / maxViolations / 2;
       building.position.z = meshY;
-      building.metrics = data[i]; 
+      building.metrics = data[i];
       scene.add(building);
       if (meshX > planeSize / 2) {
         meshX = Math.floor(-planeSize / 2);

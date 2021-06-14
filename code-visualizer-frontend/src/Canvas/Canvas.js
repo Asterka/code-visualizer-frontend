@@ -6,18 +6,19 @@ import { GUI } from "../GUI";
 import { useEffect, useRef } from "react";
 import { LOC } from "../helpers/displayMetrics";
 let rendering = false;
-let listenerExists = false;
-
+let camera = null;
+let controls = null;
+let plane = null;
 function renderBase(
   data,
   metric,
   levelState,
   inspectedClass,
-  setInspectedClass=()=>{},
+  setInspectedClass = () => {},
   isListening,
   setIsListening,
-  setMessage=()=>{},
-  setShowMessage=()=>{}
+  setMessage = () => {},
+  setShowMessage = () => {}
 ) {
   function main() {
     const canvas = document.getElementById("canvas");
@@ -32,7 +33,7 @@ function renderBase(
 
     var selectedObject;
     var raycaster = new THREE.Raycaster();
-    function listenClick(event, setIsListening, renderer) {
+    function listenClick(event, renderer) {
       setIsListening(false);
       var mouse = new THREE.Vector2();
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -47,73 +48,53 @@ function renderBase(
             Object.keys(inspectedClass) < 0 ||
             inspectedClass.className != selectedObject.object.metrics.filename
           ) {
-            console.log({
-              metrics: selectedObject.object.metrics,
-              className: selectedObject.object.metrics.filename,
-            });
             setInspectedClass({
               metrics: selectedObject.object.metrics,
               className: selectedObject.object.metrics.filename,
             });
-            setMessage({opcode: 1, msg:`${selectedObject.object.metrics.filename}`})
+            setMessage({
+              opcode: 1,
+              msg: `${selectedObject.object.metrics.filename}`,
+            });
             setShowMessage(true);
           }
         } else {
           setInspectedClass({
-            metrics: null,
-            className: "None",
+            metrics: [],
+            className: "NONE",
           });
-          setMessage({opcode: 1, msg:`No class selected`})
+          setMessage({ opcode: 1, msg: `No class selected` });
           setShowMessage(true);
         }
-      }else{
-        renderer.domElement.addEventListener(
-          "click",
-          (event) => listenClick(event, setIsListening, renderer),
-          { once: true }
-        );
+      } else {
+        setInspectedClass({
+          metrics: [],
+          className: "NONE",
+        });
       }
     }
 
     if (!isListening) {
+      setIsListening(true)
       renderer.domElement.addEventListener(
         "click",
-        (event) => listenClick(event, setIsListening, renderer),
+        (event) => listenClick(event, renderer),
         { once: true }
       );
     }
 
-    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 100, 100);
-
-    const controls = new OrbitControls(camera, canvas);
-    controls.target.set(0, 5, 0);
-    controls.update();
+    if (!camera) {
+      camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      camera.position.set(0, 100, 100);
+      controls = new OrbitControls(camera, canvas);
+      controls.target.set(0, 5, 0);
+      controls.update();
+    }
 
     const planeSize = 40;
     {
-      const loader = new THREE.TextureLoader();
-      const texture = loader.load(
-        "https://im0-tub-ru.yandex.net/i?id=56d24402bb1ed0a0e3df9628efebb217-l&n=13"
-      );
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
-      texture.magFilter = THREE.NearestFilter;
-      const repeats = planeSize / 2;
-      texture.repeat.set(repeats, repeats);
-
-      const planeGeo = new THREE.PlaneGeometry(planeSize * 2, planeSize * 2);
-      const planeMat = new THREE.MeshPhongMaterial({
-        map: texture,
-        side: THREE.DoubleSide,
-      });
-
-      const mesh = new THREE.Mesh(planeGeo, planeMat);
-      mesh.rotation.x = Math.PI * -0.5;
-      scene.add(mesh);
-    }
-    {
       switch (metric) {
+        /* We can add more and more metrics here */
         case "LOC":
           LOC(THREE, data, scene, levelState, planeSize, inspectedClass);
       }
@@ -219,7 +200,7 @@ const Canvas = (props) => {
         props.setIsListening
       );
     }
-  }, [props.projectData, props.levelState, props.inspectedClass]);
+  }, [props.projectData, props.levelState, props.inspectedClass, props.isListening]);
 
   return (
     <canvas
