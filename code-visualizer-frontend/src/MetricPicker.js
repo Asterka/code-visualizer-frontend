@@ -12,13 +12,14 @@ export default function MetricPicker({
   setShowMessage,
   user_token,
   project_id,
+  setClassDependencies
 }) {
   return (
     <div className={"metric-picker"}>
       <button
         onClick={() => {
           if (user_token != null && project_id != null) {
-            console.log(project_id);
+            //console.log(project_id);
             let temp = metricPicked;
             temp.chosen != 0
               ? (temp.chosen -= 1)
@@ -30,6 +31,10 @@ export default function MetricPicker({
               msg: "Your files are being retrieved from the server",
             });
             setShowMessage(true);
+            console.log(temp.metricShortNames[temp.chosen])
+            if (
+              temp.chosen != temp.metricShortNames.length - 1
+            ){
             axios
               .get(
                 `${
@@ -59,6 +64,16 @@ export default function MetricPicker({
                     setShowMessage(true);
                 }
               });
+            } else{
+                axios
+                .get(
+                  `${codeVisualizerServer.address}/metrics/${user_token}/${project_id}/connections`,
+                  {}
+                )
+                .then((res) => {
+                  setClassDependencies(res.data);
+                });
+              }
           } else {
             setMessage({
               opcode: 0,
@@ -80,6 +95,9 @@ export default function MetricPicker({
               : (temp.chosen = 0);
             //console.log(temp)
             setMetricPicked(Object.assign({}, temp));
+            if (
+              temp.chosen != 0
+            ){
             axios
               .get(
                 `${
@@ -102,6 +120,16 @@ export default function MetricPicker({
                     setShowMessage(true);
                 }
               });
+            }else{
+                axios
+                .get(
+                  `${codeVisualizerServer.address}/metrics/${user_token}/${project_id}/connections`,
+                  {}
+                )
+                .then((res) => {
+                  setClassDependencies(res.data);
+                });
+              }
           } else {
             setMessage({
               opcode: 0,

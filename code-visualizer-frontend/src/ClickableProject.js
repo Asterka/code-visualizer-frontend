@@ -4,7 +4,8 @@ import axios from "axios";
 
 export default function ClickableProject(props) {
   return (
-    <h1 key={props.id}
+    <h1
+      key={props.id}
       className={`clickable-project${
         props.id === props.currentProject ? "-chosen" : ""
       } xyz-in`}
@@ -12,24 +13,49 @@ export default function ClickableProject(props) {
       onClick={() => {
         props.setIsDropdownActive(false);
         props.setCurrentProject(props.id);
-        axios
+        if (
+          props.metricPicked.metricShortNames[props.metricPicked.chosen] !=
+          "COMPLEXITY"
+        ) {
+          axios
+            .get(
+              `${codeVisualizerServer.address}/metrics/${props.user_token}/${
+                props.id
+              }/${
+                props.metricPicked.metricShortNames[props.metricPicked.chosen]
+              }`,
+              {}
+            )
+            .then(function (res) {
+              console.log(res);
+              props.setProjectData(res);
+              let date = new Date(res.data.timestamp);
+              props.setMessage({
+                opcode: 1,
+                msg: `You have successfully loaded data from ${date.getDate()}.${date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`,
+              });
+              props.setShowMessage(true);
+            })
+            .catch(function (e) {
+              switch (e.response.status) {
+                case 404:
+                  props.setMessage({
+                    opcode: 0,
+                    msg: `Such project was not found in the system`,
+                  });
+                  props.setShowMessage(true);
+              }
+            });
+        }else{
+          axios
           .get(
-            `${codeVisualizerServer.address}/metrics/${props.user_token}/${props.id}/${props.metricPicked.metricShortNames[props.metricPicked.chosen]}`,
+            `${codeVisualizerServer.address}/metrics/${props.user_token}/${props.id}/connections`,
             {}
           )
-          .then(function (res) {
-            props.setProjectData(res);
-            let date = new Date(res.data.timestamp);
-            props.setMessage({opcode: 1, msg:`You have successfully loaded data from ${date.getDate()}.${date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`})
-            props.setShowMessage(true);
-          })
-          .catch(function (e) {
-            switch (e.response.status) {
-              case 404:
-                props.setMessage({ opcode: 0, msg: `Such project was not found in the system` });
-                props.setShowMessage(true);
-            }
+          .then((res) => {
+            props.setClassDependencies(res.data);
           });
+        }
       }}
     >
       {props.id}

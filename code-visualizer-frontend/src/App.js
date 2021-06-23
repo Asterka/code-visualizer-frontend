@@ -24,10 +24,11 @@ function App() {
   const [inspectedClass, setInspectedClass] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [canvasGeneral, setCanvasGeneral] = useState(null)
+  const [classDependencies, setClassDependencies] = useState(null);
   /* User-chosen metric */
   const [metricPicked, setMetricPicked] = useState({
     chosen: 0,
-    metricShortNames: ["LOC", "CBO", "CYCOMP"],
+    metricShortNames: ["LOC", "CBO", "CYCOMP", "COMPLEXITY"],
   });
 
   return (
@@ -56,6 +57,8 @@ function App() {
             message={message}
             metricPicked={metricPicked}
             setMetricPicked={setMetricPicked}
+            classDependencies={classDependencies}
+            setClassDependencies={setClassDependencies}
           />
           <MetricPicker
             isDropdownActive={isDropdownActive}
@@ -66,6 +69,7 @@ function App() {
             user_token={userToken}
             setShowMessage={setShowMessage}
             setMessage={setMessage}
+            setClassDependencies={setClassDependencies}
           />
 
           <RangeInput levelState={levelState} setLevelState={setLevelState} />
@@ -81,6 +85,7 @@ function App() {
           setShowMessage={setShowMessage}
           canvasGeneral={canvasGeneral}
           setCanvasGeneral={setCanvasGeneral}
+          classDependencies={classDependencies}
         />
 
       </div>

@@ -4,11 +4,12 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { GUI } from "../GUI";
 
 import { useEffect, useRef } from "react";
-import { LOC } from "../helpers/displayMetrics";
+import { LOC, CBO } from "../helpers/displayMetrics";
 let rendering = false;
 let camera = null;
 let controls = null;
 let plane = null;
+
 function renderBase(
   data,
   metric,
@@ -18,7 +19,8 @@ function renderBase(
   isListening,
   setIsListening,
   setMessage = () => {},
-  setShowMessage = () => {}
+  setShowMessage = () => {},
+  classDependencies
 ) {
   function main() {
     const canvas = document.getElementById("canvas");
@@ -33,7 +35,7 @@ function renderBase(
 
     var selectedObject;
     var raycaster = new THREE.Raycaster();
-    function listenClick(event, renderer) {
+    function listenClick(event) {
       setIsListening(false);
       var mouse = new THREE.Vector2();
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -73,12 +75,11 @@ function renderBase(
         });
       }
     }
-
     if (!isListening) {
-      setIsListening(true)
+      setIsListening(true);
       renderer.domElement.addEventListener(
         "click",
-        (event) => listenClick(event, renderer),
+        (event) => listenClick(event),
         { once: true }
       );
     }
@@ -97,6 +98,10 @@ function renderBase(
         /* We can add more and more metrics here */
         case "LOC":
           LOC(THREE, data, scene, levelState, planeSize, inspectedClass);
+          break;
+        case "CBO":
+          CBO(THREE, data, scene, levelState, planeSize, inspectedClass);
+          break;
       }
     }
 
@@ -140,14 +145,12 @@ function renderBase(
       }
       return needResize;
     }
-
     function render() {
       if (resizeRendererToDisplaySize(renderer)) {
         const canvas = renderer.domElement;
         camera.aspect = canvas.clientWidth / canvas.clientHeight;
         camera.updateProjectionMatrix();
       }
-
       renderer.render(scene, camera);
 
       requestAnimationFrame(render);
@@ -163,7 +166,6 @@ function renderBase(
       renderer.render(scene, camera);
     };
     if (!rendering) {
-      animate();
       rendering = true;
     }
   }
@@ -186,7 +188,8 @@ const Canvas = (props) => {
           props.isListening,
           props.setIsListening,
           props.setMessage,
-          props.setShowMesseage
+          props.setShowMesseage,
+          props.classDependencies
         );
       }
     } else {
@@ -197,18 +200,26 @@ const Canvas = (props) => {
         undefined,
         undefined,
         props.isListening,
-        props.setIsListening
+        props.setIsListening,
+        []
       );
     }
-  }, [props.projectData, props.levelState, props.inspectedClass, props.isListening]);
+  }, [
+    props.projectData,
+    props.levelState,
+    props.inspectedClass,
+    props.isListening,
+  ]);
 
   return (
-    <canvas
-      id={"canvas"}
-      ref={canvasRef}
-      width={"100vw"}
-      height={"100vh"}
-    ></canvas>
+    <>
+      <canvas
+        id={"canvas"}
+        ref={canvasRef}
+        width={"100vw"}
+        height={"100vh"}
+      ></canvas>
+    </>
   );
 };
 

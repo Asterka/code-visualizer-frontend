@@ -16,7 +16,8 @@ function getProjects(
   setMessage,
   message,
   metricPicked,
-  setMetricPicked
+  setMetricPicked,
+  setClassDependencies
 ) {
   axios
     .get(`${codeVisualizerServer.address}/projects`, {
@@ -41,10 +42,12 @@ function getProjects(
               message={message}
               metricPicked={metricPicked}
               setMetricPicked={setMetricPicked}
+              setClassDependencies={setClassDependencies}
             />
           );
         })
       );
+      
     })
     .catch(function (e) {
       setMessage({opcode:0, msg: "Could not get to the server. Make sure the server is running, and check config.js"});
@@ -67,6 +70,8 @@ function Projects({
   message,
   metricPicked,
   setMetricPicked,
+  classDependencies,
+  setClassDependencies
 }) {
   return (
     <div className="projects">
@@ -86,7 +91,8 @@ function Projects({
             setMessage,
             message,
             metricPicked,
-            setMetricPicked
+            setMetricPicked,
+            setClassDependencies
           );
         }}
       >
